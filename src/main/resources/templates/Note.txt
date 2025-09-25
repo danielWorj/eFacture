@@ -22,3 +22,19 @@ Exemple :
 	- 
 
 1- Facturation  
+
+Si on les entités : devis , section , materiel  ligneDevis(section,materiel) et enregistrement(devis,section,lignedevis)
+
+
+tacheList :[];
+
+ligneDevis :[]; 
+
+for i, e.lenght :
+	
+	tacheList.add(e.tache) ;
+	
+	if e.m
+Quand on choisit une categorie de travaux , le devis se met a jour pour cette categorie 
+Et on a le choix d'imprimer soit tout le devis complet ou le devis par tache.
+	

@@ -1,25 +1,27 @@
 package com.server.eFacture.Controller.Devis;
 
 import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.server.eFacture.Entity.Devis.Devis;
 import com.server.eFacture.Entity.Devis.Enregistrement;
 import com.server.eFacture.Entity.Entreprise.Materiel;
+import com.server.eFacture.Entity.Response.ServerResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("efacture/api/v1/devis/")
 @CrossOrigin("*")
 public interface DevisControllerIN {
 
-    @GetMapping("/postdata")
-    ResponseEntity<String> postData();
+    @PostMapping("/creation")
+    ResponseEntity<Devis> createDevis(@RequestParam("devis") String devis) throws JsonProcessingException;
 
+    @PostMapping("/construction")
+    ResponseEntity<ServerResponse> constructionDevis(@RequestBody String enregistrement) throws  JsonProcessingException ;
     @GetMapping("/bydevis/{id}")
     ResponseEntity<List<Enregistrement>> findEnregistrementByDevis(@PathVariable Integer id);
+    @GetMapping("/bydevis/tache/{idDevis}/{idTache}")
+    ResponseEntity<List<Enregistrement>> findEnregistrementByDevisAndTache(@PathVariable Integer idDevis, @PathVariable Integer idTache);
 
-    @GetMapping("/materiel")
-    ResponseEntity<List<Materiel>> findMateriel();
 }

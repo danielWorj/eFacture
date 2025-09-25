@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Facture } from './Components/facture/facture';
+import { Facturation } from './Components/facturation/facturation';
 
 export const routes: Routes = [ 
 
@@ -18,7 +19,7 @@ export const routes: Routes = [
    }, 
     {
      path : 'facturation',
-     loadComponent : ()=>import('./Components/facturation/facturation').then((f)=>f.Facturation),
+     component : Facturation,
     
    }, 
     {

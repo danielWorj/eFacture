@@ -26,44 +26,8 @@
                             <div class="container bg bg-white p-5">
                                 <div class="row">
                                   
-                                    <div class="col-md-4">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h3 class="fw-bold">Formulaire</h3>
-                                            <p class="card-text">
-                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae, voluptatibus?
-                                            </p>
-                                        </div>
-                                        <div class="card-body">
-                                            <form>
-                                                <div class="form-group">
-                                                    <label for="exampleInputPassword1">Categorie de Travaux</label>
-                                                    <select class="form-control" id="exampleFormControlSelect1">
-                                                        <option>Terrassement</option>
-                                                        <option>Fondation</option>
-                                                        <option>Elevation</option>
-                                                        <option>Chainage</option>
-                                                    </select>
-                                                    <label for="exampleInputPassword1">Materiaux</label>
-                                                    <select class="form-control" id="exampleFormControlSelect1">
-                                                        <option>Ciment</option>
-                                                        <option>Fer 6</option>
-                                                        <option>Fer 8</option>
-                                                        <option>Pointe 12</option>
-                                                        <option>Pointe 10</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="exampleInputPassword1">Quantite</label>
-                                                    <input type="number" class="form-control"  placeholder="Quantite">
-                                                </div>
-                                            
-                                                <button type="submit" class="btn btn-primary btn-block">Valider</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    </div>
-                                    <div class="col-md-8">
+                                   
+                                    <div class="col-md-12">
                                     
                                     <div class="d-flex justify-content-between">
                                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae ipsum, ullam sunt harum a vel illum quam, nemo temporibus provident tempore incidunt enim sapiente consequatur!</p>
@@ -90,7 +54,7 @@
                                                                 <li>Dash LLC</li>
                                                                 <li>2500 Ridgepoint Dr, Suite 105-C</li>
                                                                 <li>Austin TX 78754</li>
-                                                                <li>VAT Number EU826113958</li>
+                                                                <li><span class="font-weight-bold">Devis N:</span>{{devis}}</li>
                                                             </ul>
                                                         </div>
                                                     </div>
@@ -101,77 +65,133 @@
                                                         <div class="invoice-details mt25">
                                                             <div class="well">
                                                                 <ul class="list-unstyled mb-3">
-                                                                    <div class="row mb-3">
-                                                                    <li class="col-md-8 mb-1">
-                                                                        <span class="fw-bold">Maitre d'ouvrage:</span> 
-                                                                        <input type="text" class="form-control" >
-                                                                    </li>
-                                                                    <li class="col-md-4 mb-1">
-                                                                        <span class="fw-bold">Contact:</span> 
-                                                                        <input type="text" class="form-control" >
-                                                                    </li>
-                                                                    </div>
+                                                                    
+                                                                    <form action="" [formGroup]="devisFb" (ngSubmit)="declarationDevis()">
+                                                                        <div class="row mb-3">
+                                                                            <li class="col-md-8 mb-1">
+                                                                                <span class="fw-bold">Maitre d'ouvrage:</span> 
+                                                                                <input type="text" class="form-control" formControlName="client">
+                                                                            </li>
+                                                                            <li class="col-md-4 mb-1">
+                                                                                <span class="fw-bold">Contact:</span> 
+                                                                                <input type="text" class="form-control" formControlName="technicien" >
+                                                                            </li>
+                                                                        </div> 
+                                                                          @if (devis==0) {
+                                                                                <button type="submit" (click)="validation()" class="btn btn-outline-info align-right">Creer</button>
+                                                                            }
+                                                                    </form>
                                                                     <div class="d-flex justify-content-between">
-                                                                        <li><span class="font-weight-bold">Date:</span> Thursday, December 1th, 2015</li>
+                                                                        <li><span class="font-weight-bold">Date:</span> {{currentDate }}</li>
                                                                         <li><span class="font-weight-bold">Status:</span> <span class="badge badge-danger">UNPAID</span></li>
                                                                     </div>
+                                                                    
+                                                                  
+
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <hr>
-                                                        <div class="invoice-items">
-                                                            <div class="table table-responsive" style="overflow: hidden; outline: none;" tabindex="0">
-                                                                <table class="table table-bordered">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th class="per70 text-center">Designation</th>
-                                                                            <th class="per5 text-center">Quantite</th>
-                                                                            <th class="per25 text-center">Prix Unitaire</th>
-                                                                            <th class="per25 text-center">Prix Total</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td >1024MB Cloud 2.0 Server </td>
-                                                                            <td class="text-center">1</td>
-                                                                            <td class="text-center">$25.00 USD</td>
-                                                                            <td class="text-center">$25.00 USD</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>Logo design</td>
-                                                                            <td class="text-center">1</td>
-                                                                            <td class="text-center">$12.00 USD</td>
-                                                                            <td class="text-center">$200.00 USD</td>
-                                                                            <td class="text-center">$200.00 USD</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>Backup - 1024MB Cloud 2.0 Server </td>
-                                                                            <td class="text-center">12</td>
-                                                                            <td class="text-center">$12.00 USD</td>
-                                                                            <td class="text-center">$12.00 USD</td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                    <tfoot>
-                                                                        <tr>
-                                                                            <th colspan="3" class="text-right">Sub Total:</th>
-                                                                            <th class="text-center">$237.00 USD</th>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <th colspan="3" class="text-right">20% VAT:</th>
-                                                                            <th class="text-center">$47.40 USD</th>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <th colspan="3" class="text-right">Credit:</th>
-                                                                            <th class="text-center">$00.00 USD</th>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <th colspan="3" class="text-right">Total:</th>
-                                                                            <th class="text-center">$284.4.40 USD</th>
-                                                                        </tr>
-                                                                    </tfoot>
-                                                                </table>
+                                                       @if (devis!=0) {
+                                                         <hr>
+                                                          <div class="invoice-details mt25">
+                                                            <div class="well">
+                                                                <ul class="list-unstyled mb-3">
+                                                                    <div class="row mb-3">
+                                                                    <li class="col-md-12 mb-1">
+                                                                        <label for="exampleInputPassword1">Categorie de Travaux</label>
+                                                                        <select class="form-control" id="exampleFormControlSelect1" (change)="setTache($event)">
+                                                                            @for (t of listTache; track $index) {
+                                                                                <option value="${{t.id}}">{{t.intitule}}</option>
+                                                                            }
+                                                                        </select>
+                                                                    </li>
+                                                                    
+                                                                    </div>
+                                                                   
+                                                                </ul>
                                                             </div>
-                                                        </div>
+                                                          </div>
+                                                          <hr>
+                                                          <div class="invoice-items row">
+                                                                <div class="col-md-4">
+                                                                <div class="card">
+                                                                    <div class="card-header">
+                                                                        <h3 class="fw-bold">Constructeur</h3>
+                                                                        <p class="card-text">
+                                                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae, voluptatibus?
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="card-body">
+                                                                        <form [formGroup]="enregistrementFb" (ngSubmit)="constructionDevis()">
+                                                                            <div class="form-group">
+    
+                                                                                <label for="exampleInputPassword1">Materiel</label>
+                                                                                <select class="form-control" id="exampleFormControlSelect1" formControlName="materiel" (change)="setMateriel($event)">
+                                                                                @for (m of listMateriel; track $index) {
+                                                                                    <option value="${{m.id}}" >{{m.intitule}}</option>
+                                                                                }
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="form-group">
+                                                                                <label for="exampleInputPassword1">Quantite</label>
+                                                                                <input type="number" class="form-control" formControlName="quantite"  placeholder="Quantite">
+                                                                            </div>
+                                                                        
+                                                                            <button type="submit" class="btn btn-outline-primary btn-block">Ajouter</button> 
+                                                                        </form>
+
+                                                                    </div>
+                                                                </div>
+                                                                </div>
+                                                                <div class="table table-responsive col-md-8" style="overflow: hidden; outline: none;" tabindex="0">
+                                                                    <p class="font-weight-bold"></p>
+                                                                    <table class="table table-bordered " id="myTable">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th class="per70 text-center">Designation</th>
+                                                                                <th class="per5 text-center">Quantite</th>
+                                                                                <th class="per25 text-center">Prix Unitaire</th>
+                                                                                <th class="per25 text-center">Prix Total</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        @for (e of listEnregistrement; track $index) {
+                                                                            <tr>
+                                                                                <td >{{e.materiel.intitule}} </td>
+                                                                                <td class="text-center">{{e.quantite}} {{e.materiel.unite}} </td>
+                                                                                <td class="text-center">{{e.materiel.prixUnitaire}} Fcfa</td>
+                                                                                <td class="text-center">{{e.quantite * e.materiel.prixUnitaire!}} Fcfa</td>
+                                                                            </tr>
+                                                                        }
+                                                                        @empty {
+                                                                                <tr>
+                                                                                    <th colspan="4" class="text-center text-danger">Pas d'enregistrement pour cette tache</th>
+                                                                                </tr>
+                                                                        }
+                                                                        </tbody>
+                                                                        <!-- <tfoot>
+                                                                            <tr>
+                                                                                <th colspan="3" class="text-right">Sub Total:</th>
+                                                                                <th class="text-center">$237.00 USD</th>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th colspan="3" class="text-right">20% VAT:</th>
+                                                                                <th class="text-center">$47.40 USD</th>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th colspan="3" class="text-right">Credit:</th>
+                                                                                <th class="text-center">$00.00 USD</th>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th colspan="3" class="text-right">Total:</th>
+                                                                                <th class="text-center">$284.4.40 USD</th>
+                                                                            </tr>
+                                                                        </tfoot> -->
+                                                                    </table>
+                                                                </div>
+
+                                                          </div>
+                                                       }
                                                     
                                                     </div>
                                                     <!-- col-lg-12 end here -->

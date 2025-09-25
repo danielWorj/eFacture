@@ -1,0 +1,24 @@
+Dans Angular 20 les assets se placent dans le dossier public. 
+
+Pour la facs
+
+
+Model :
+
+Devis(date , client , status )
+
+Tache(intitule, description , devis)
+
+MateriauTache(materiau,tache)
+
+Materiau(nom , prixInitial, ...)
+
+
+
+
+Une ligne du tableau appartient a une categorie de travaux.
+Exemple :
+	- TERRASSEMENT ET IMPLANTATION
+	- 
+
+1- Facturation  

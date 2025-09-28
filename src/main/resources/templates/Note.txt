@@ -37,4 +37,8 @@ for i, e.lenght :
 	if e.m
 Quand on choisit une categorie de travaux , le devis se met a jour pour cette categorie 
 Et on a le choix d'imprimer soit tout le devis complet ou le devis par tache.
-	
+
+
+
+Le materiel doit correspondre aux taches et on peut laisser la possibilite au technicien d'ajouter
+le materiel pour faire grandir la bd.

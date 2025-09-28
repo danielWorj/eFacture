@@ -11,7 +11,7 @@ import java.util.List;
 public interface EnregistrementRepository extends JpaRepository<Enregistrement,Integer> {
 
     @Query(value = "SELECT e FROM Enregistrement e JOIN e.devis d JOIN e.tache t WHERE d=:devis ")
-    List<Enregistrement> findByDevisGroupByTache(Devis devis);
+    List<Enregistrement> findByDevis(Devis devis);
 
     List<Enregistrement> findByDevisAndTache(Devis devis, Tache tache);
 }

@@ -25,7 +25,11 @@ import lombok.Data;
 import org.springframework.context.annotation.Bean;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,8 +38,8 @@ import java.util.List;
 @AllArgsConstructor
 public class GeneratePDF {
     public void generate(Devis devis, Tache tache ,  List<Enregistrement> enregistrementList) throws FileNotFoundException, MalformedURLException {
-        String path = String.valueOf(tache.getIntitule()+".pdf"); //Nom du pdf
-        PdfWriter pdfWriter = new PdfWriter(path);
+        String namePdfFile = String.valueOf(tache.getIntitule()+".pdf"); //Nom du pdf
+        PdfWriter pdfWriter = new PdfWriter(namePdfFile);
         PdfDocument pdfDocument = new PdfDocument(pdfWriter);
         pdfDocument.setDefaultPageSize(PageSize.A4);
 
@@ -45,6 +49,7 @@ public class GeneratePDF {
 
         ImageData imageData = ImageDataFactory.create(imagePath);
         Image image = new Image(imageData);
+
 
         /*float x= pdfDocument.getDefaultPageSize().getWidth()/2;
         float y= pdfDocument.getDefaultPageSize().getHeight()/2;
@@ -75,8 +80,6 @@ public class GeneratePDF {
         Border gb=new SolidBorder(Color.GRAY,1f/2f);
         Table divider = new Table(fullwidth);
         divider.setBorder(gb);
-
-
 
         document.add(table);
         document.add(onesp);
@@ -164,8 +167,39 @@ public class GeneratePDF {
 
 
         document.close();
-    }
 
+        fileCopy(devis.getClient().getNom(),namePdfFile);
+    }
+    public static void fileCopy(String nomClient , String nomPdf){
+       // Path sourcePath = Paths.get("./Source/img.png");
+       // Path destinatePath = Paths.get("./Destination/img.png");
+        //String nomDossier = devis.getClient().getNom();
+        Path source = Paths.get("./"+nomPdf); //Source du pdf
+        Path dossier = Paths.get("./"+nomClient);
+        Path destination = Paths.get("./"+nomClient+"/"+nomPdf);
+        try {
+            //Creation du dossier
+            //Check si le dossier existe deja
+            if (!Files.isDirectory(dossier)){
+                Path dir = Files.createDirectory(Path.of("./"+nomClient)); //creation
+            }else{
+                //s il existe deja on supprime et on cree un nouveau
+                Files.delete(dossier);
+                Path dir = Files.createDirectory(Path.of("./"+nomClient)); //creation
+            }
+            //On cree un dossier
+            Files.copy(source,destination);
+            //System.out.println("File copied successfully");
+
+            Files.delete(source);
+            //System.out.println("File delete successfully");
+
+        }catch (
+                IOException e){
+            System.err.println("Error copying file: " + e.getMessage());
+        }
+
+    }
     public static Cell getHeaderTextCell(String textValue){
         return new Cell()
                 .add(textValue)
@@ -173,14 +207,12 @@ public class GeneratePDF {
                 .setBorder(Border.NO_BORDER)
                 .setTextAlignment(TextAlignment.RIGHT);
     }
-
     public static Cell getHeaderTextCellValue(String textValue){
         return new Cell()
                 .add(textValue)
                 .setBorder(Border.NO_BORDER)
                 .setTextAlignment(TextAlignment.LEFT);
     }
-
     public static Cell getBillingandShippingCell(String textValue){
         return new Cell()
                 .add(textValue)
@@ -189,7 +221,6 @@ public class GeneratePDF {
                 .setBorder(Border.NO_BORDER)
                 .setTextAlignment(TextAlignment.LEFT);
     }
-
     public static Cell getCell10fLeft(String textvalue, Boolean isBold){
         Cell mycell = new Cell()
                     .add(textvalue)

@@ -6,13 +6,15 @@ import { Devis } from '../../Core/Model/Devis/Devis';
 import { Materiel } from '../../Core/Model/Entreprise/Materiel';
 import { DevisService } from '../../Core/Services/Devis/devis-service';
 import { ConfigurationService } from '../../Core/Services/Configuration/configuration-service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Tache } from '../../Core/Model/Devis/Tache';
+import { Client } from '../../Core/Model/Entreprise/Client';
+// Ensure that Client is exported as a class or interface in its module.
 
 
 @Component({
   selector: 'app-facturation',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule , DatePipe],
   templateUrl: './facturation.html',
   styleUrl: './facturation.css'
 })
@@ -28,6 +30,7 @@ export class Facturation implements OnInit{
       id : new FormControl(),
       client : new FormControl(),
       technicien : new FormControl(),
+      telephone : new FormControl()
     });
 
     this.enregistrementFb = this.fb.group({
@@ -40,11 +43,12 @@ export class Facturation implements OnInit{
   }
 
 
- listMateriel:Materiel[] = []; 
+ listMateriel = signal<Materiel[]>([]); 
 
  currentDate = new Date() ; 
  ngOnInit(): void {
-
+    this.getAllTache(); 
+    this.getAllMateriel();
  }
 
  client :string = ''; 
@@ -52,37 +56,51 @@ export class Facturation implements OnInit{
   this.client = e?.target.value; 
  }
 
- tache:number = 0; 
- setTache(e:any){
-  this.tache = e.target.value;
 
-  this.getAllEnregistrementByDevisAndTache(this.devis,this.tache);
-
-  this.getAllMateriel();
- }
 
  materiel:number =0; 
  setMateriel(e:any){
-  this.materiel = e.target.value;
-  alert(this.materiel);
+  this.materiel = parseInt(e.target.value);
  }
 
- devis :number = 0 ; 
+ devis = signal<number>(0);
+ devisId = 0 ; 
+ clientIsCreated = signal(false) ; 
+ clientInTreatment = signal<Client>({ id: 0, nom: '', telephone: '', localisation: '' }); 
+
  declarationDevis(){
+  
+
   const formData :FormData = new FormData; 
+
+
+  const idTechnicien = localStorage.getItem('technicien') || '';
+  
+  //console.log(`Id : ${idTechnicien}`); 
+
+  this.devisFb.controls['technicien'].setValue(idTechnicien);
 
   console.log(this.devisFb.value);
 
   formData.append("devis", JSON.stringify(this.devisFb.value)); 
-
+  
   this.devisService.creationDevis(formData).subscribe({
       next : (data:Devis)=>{
-        this.devis = 1;
-  
-        if (this.devis!=0) {
-          alert('ouverture');
-        }
-        console.log(this.devis);
+        this.clientInTreatment.set(data.client);
+
+        this.devis.set(data.id);
+
+        this.devisId = data.id;
+
+        this.clientIsCreated.set(true); 
+
+        this.getAllTache(); 
+
+        this.getAllMateriel( ) ;
+
+        alert('Le client a bien ete creee');
+        //alert('Client Cree');
+
 
       } ,
       error : ()=>{
@@ -96,43 +114,63 @@ export class Facturation implements OnInit{
 
  }
  constructionDevis(){
-  // const formData : FormData = new FormData; 
+  //alert(this.tache);
+  if (this.tache!=0 ) {
+      const formData : FormData = new FormData; 
 
-  // console.log(this.enregistrementFb.value); 
+      console.log(this.enregistrementFb.value); 
 
-  // this.enregistrementFb.controls['devis'].setValue(this.devis);
-  // this.enregistrementFb.controls['tache'].setValue(this.tache);
-
-
-  // formData.append("enregistrement", JSON.stringify(this.enregistrementFb.value)); 
-
-  // this.devisService.devisConstructor(formData).subscribe({
-  //    next : (data:ServerResponse)=>{
-  //         if (data.status) {
-
-  //           console.log(data.message);
+      
+      this.enregistrementFb.controls['devis'].setValue(this.devisId);
+      this.enregistrementFb.controls['tache'].setValue(this.tache);
 
 
-  //         }
-  //     } ,
-  //     error : ()=>{
-  //       console.log('Erreur de construction du devis');
-  //     }
-  // })
+      formData.append("enregistrement", JSON.stringify(this.enregistrementFb.value)); 
+
+      console.log(this.enregistrementFb.value);
+
+      this.devisService.devisConstructor(formData).subscribe({
+        next : (data:ServerResponse)=>{
+                this.getAllEnregistrementByDevisAndTache(this.devisId,this.tache);
+
+              if (data.status) {
+
+                console.log(data.message);
+                
+                // this.getAllEnregistrementByDevisAndTache(this.devis,this.tache);
+
+              }
+          } ,
+          error : ()=>{
+            console.log('Erreur de construction du devis');
+          }
+      })
+  }else{
+    alert('Veillez choisir une tache a realiser')
+  }
  }
 
- activeDevisOptions(idDevis : number,idTache :number , ){
+tache:number = 0; 
+setTache(e:any){
+  this.tache = parseInt(e.target.value);
+
+   this.activeDevisOptions(this.devisId,this.tache);
+
+  // this.getAllMateriel();
+ }
+activeDevisOptions(idDevis : number,idTache :number , ){
   this.getAllMateriel();
   this.getAllEnregistrementByDevisAndTache(idDevis,idTache); 
  }
-listEnregistrement :Enregistrement[] = []; 
+listEnregistrement = signal<Enregistrement[]>([]); 
  getAllEnregistrementByDevisAndTache(idDevis :any, idTache :any){
- 
-
+ //alert('Aleeeerrtttttt');
   this.devisService.fetchAllEnregistrementByDevisAndTache(idDevis,idTache).subscribe({
     next : (data :Enregistrement[])=>{
-      this.listEnregistrement = data; 
+      this.listEnregistrement.set(data); 
       console.log(this.listEnregistrement);
+
+      this.calculSomme()//Methode qui calcule la somme totale
     }
   });
  }
@@ -141,7 +179,7 @@ listEnregistrement :Enregistrement[] = [];
  getAllMateriel(){
   this.configService.getListMateriel().subscribe({
       next:(data:Materiel[])=>{
-        this.listMateriel = data; 
+        this.listMateriel.set(data); 
         console.log(this.listMateriel);
       }, 
       error(err) {
@@ -151,18 +189,60 @@ listEnregistrement :Enregistrement[] = [];
   )
  }
 
- listTache : Tache[] = []; 
+ listTache= signal<Tache[]>([]); 
  getAllTache(){
   this.configService.getListTache().subscribe({
     next :(data:Tache[])=>{
-        this.listTache = data; 
-        console.log(this.listMateriel);
+        this.listTache.set(data); 
     }, 
     error(err) {
-      console.log('Liste materiel : failed'); 
+      console.log('Liste tache : failed'); 
     },
   })
  }
 
-  
+ isImprimer :boolean = false ; 
+
+ impressinPartielParTache(){
+  this.devisService.impressionPartielDevisAndTache(this.devisId,this.tache).subscribe({
+    next :(data:ServerResponse)=>{
+      if (data.status) {
+        console.log('Impression de la tache : reussi')
+      }
+    }, 
+    error : ()=>{
+      console.log('Erreur d impression : failed'); 
+    }
+  });
+ }
+
+ impressionTotale(){
+  this.devisService.impressionCompleteDevis(this.devis()).subscribe({
+    next :(data :ServerResponse)=>{
+      if (data.status) {
+        console.log('Impression Complete : reussi');
+      }
+    }, 
+    error : ()=>{
+      console.log('Impression complete : failed'); 
+    }
+  })
+ }
+
+ sommeEnregistrement = signal<number>(0); 
+ listEnregistre : Enregistrement[] = []; 
+
+ calculSomme(){
+  let somme = 0;
+  const enregistrements = this.listEnregistrement();
+  for (let i = 0; i < enregistrements.length; i++) {
+    const enregistrement = enregistrements[i];
+
+    somme = somme + (enregistrement.materiel.prixUnitaire! * enregistrement.quantite);
+
+    console.log(somme);
+  }
+  this.sommeEnregistrement.set(somme);
+  console.log(this.sommeEnregistrement());
+ }
 }

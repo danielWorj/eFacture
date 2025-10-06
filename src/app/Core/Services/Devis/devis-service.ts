@@ -24,4 +24,12 @@ export class DevisService {
   fetchAllEnregistrementByDevisAndTache(idDevis :number, idTache:number){
     return this.http.get<Enregistrement[]>(`${eFactureEndPoints.Enregistrement.allByDevisAndTache}/${idDevis}/${idTache}`);
   }
+
+  impressionCompleteDevis(devis :number):Observable<ServerResponse>{
+    return this.http.get<ServerResponse>(eFactureEndPoints.Enregistrement.impressionComplete+'/'+devis);
+  }
+
+  impressionPartielDevisAndTache(devis:number, tache :number):Observable<ServerResponse>{
+    return this.http.get<ServerResponse>(eFactureEndPoints.Enregistrement.impressionTache+'/'+devis+'/'+tache); 
+  }
 }

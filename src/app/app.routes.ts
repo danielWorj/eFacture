@@ -30,10 +30,10 @@ export const routes: Routes = [
      path : 'paiements',
      loadComponent : ()=>import('./Components/paiement/paiement').then((p)=>p.Paiement),
    }, 
-//   {
-//     path : 'dashboard',
-//     loadComponent : ()=>import('./core/logic/dashboard/dashboard.component').then((d)=>d.DashboardComponent),
-//   },
+   {
+     path : 'configuration',
+     loadComponent : ()=>import('./Components/configuration/configuration').then((c)=>c.Configuration),
+   },
 //   {
 //     path : 'admin',
 //     loadComponent : ()=>import('./core/logic/dashboard/dashboard.component').then((d)=>d.DashboardComponent),

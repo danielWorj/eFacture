@@ -54,7 +54,7 @@
                                                                 <li>Dash LLC</li>
                                                                 <li>2500 Ridgepoint Dr, Suite 105-C</li>
                                                                 <li>Austin TX 78754</li>
-                                                                <li><span class="font-weight-bold">Devis N:</span>{{devis}}</li>
+                                                                <li><span class="font-weight-bold">Devis N:</span>{{devisId}}</li>
                                                             </ul>
                                                         </div>
                                                     </div>
@@ -66,23 +66,38 @@
                                                             <div class="well">
                                                                 <ul class="list-unstyled mb-3">
                                                                     
-                                                                    <form action="" [formGroup]="devisFb" (ngSubmit)="declarationDevis()">
-                                                                        <div class="row mb-3">
+                                                                    @if (!clientIsCreated()) {
+                                                                        <form action="" [formGroup]="devisFb" (ngSubmit)="declarationDevis()">
+                                                                            <div class="row mb-3">
+                                                                                <li class="col-md-8 mb-1">
+                                                                                    <span class="fw-bold">Maitre d'ouvrage:</span> 
+                                                                                    <input type="text" class="form-control" formControlName="client">
+                                                                                </li>
+                                                                                <li class="col-md-4 mb-1">
+                                                                                    <span class="fw-bold">Contact:</span> 
+                                                                                    <input type="text" class="form-control" formControlName="telephone" >
+                                                                                </li>
+                                                                            </div> 
+                                                                            
+                                                                                <button type="submit" (click)="validation()" class="btn btn-outline-info align-right">Creer</button>
+                                                                            
+                                                                        </form>
+                                                                    }
+                                                                    @if (clientIsCreated()) {
+                                                                         <div class="row mb-3">
                                                                             <li class="col-md-8 mb-1">
-                                                                                <span class="fw-bold">Maitre d'ouvrage:</span> 
-                                                                                <input type="text" class="form-control" formControlName="client">
+                                                                                <span class="font-weight-bold">Maitre d'ouvrage:</span> 
+                                                                                {{clientInTreatment().nom}}
                                                                             </li>
                                                                             <li class="col-md-4 mb-1">
-                                                                                <span class="fw-bold">Contact:</span> 
-                                                                                <input type="text" class="form-control" formControlName="technicien" >
+                                                                                <span class="font-weight-bold">Contact:</span> 
+                                                                                {{clientInTreatment().telephone}}
                                                                             </li>
-                                                                        </div> 
-                                                                          @if (devis==0) {
-                                                                                <button type="submit" (click)="validation()" class="btn btn-outline-info align-right">Creer</button>
-                                                                            }
-                                                                    </form>
+                                                                          </div> 
+                                                                    }
+                                                                    <hr>
                                                                     <div class="d-flex justify-content-between">
-                                                                        <li><span class="font-weight-bold">Date:</span> {{currentDate }}</li>
+                                                                        <li><span class="font-weight-bold">Date:</span> {{currentDate.getDate() }}</li>
                                                                         <li><span class="font-weight-bold">Status:</span> <span class="badge badge-danger">UNPAID</span></li>
                                                                     </div>
                                                                     
@@ -91,17 +106,16 @@
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                       @if (devis!=0) {
-                                                         <hr>
+                                                       <hr>
                                                           <div class="invoice-details mt25">
                                                             <div class="well">
                                                                 <ul class="list-unstyled mb-3">
                                                                     <div class="row mb-3">
                                                                     <li class="col-md-12 mb-1">
                                                                         <label for="exampleInputPassword1">Categorie de Travaux</label>
-                                                                        <select class="form-control" id="exampleFormControlSelect1" (change)="setTache($event)">
-                                                                            @for (t of listTache; track $index) {
-                                                                                <option value="${{t.id}}">{{t.intitule}}</option>
+                                                                        <select class="form-control" id="exampleFormControlSelect1"   (change)="setTache($event)">
+                                                                            @for (t of listTache(); track $index) {
+                                                                                <option value="{{t.id}}">{{t.intitule}}</option>
                                                                             }
                                                                         </select>
                                                                     </li>
@@ -126,9 +140,9 @@
                                                                             <div class="form-group">
     
                                                                                 <label for="exampleInputPassword1">Materiel</label>
-                                                                                <select class="form-control" id="exampleFormControlSelect1" formControlName="materiel" (change)="setMateriel($event)">
-                                                                                @for (m of listMateriel; track $index) {
-                                                                                    <option value="${{m.id}}" >{{m.intitule}}</option>
+                                                                                <select class="form-control" formControlName="materiel" >
+                                                                                @for (m of listMateriel(); track $index) {
+                                                                                    <option value="{{m.id}}" >{{m.intitule}}</option>
                                                                                 }
                                                                                 </select>
                                                                             </div>
@@ -155,7 +169,7 @@
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
-                                                                        @for (e of listEnregistrement; track $index) {
+                                                                        @for (e of listEnregistrement(); track $index) {
                                                                             <tr>
                                                                                 <td >{{e.materiel.intitule}} </td>
                                                                                 <td class="text-center">{{e.quantite}} {{e.materiel.unite}} </td>
@@ -169,29 +183,18 @@
                                                                                 </tr>
                                                                         }
                                                                         </tbody>
-                                                                        <!-- <tfoot>
-                                                                            <tr>
-                                                                                <th colspan="3" class="text-right">Sub Total:</th>
-                                                                                <th class="text-center">$237.00 USD</th>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th colspan="3" class="text-right">20% VAT:</th>
-                                                                                <th class="text-center">$47.40 USD</th>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th colspan="3" class="text-right">Credit:</th>
-                                                                                <th class="text-center">$00.00 USD</th>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th colspan="3" class="text-right">Total:</th>
-                                                                                <th class="text-center">$284.4.40 USD</th>
-                                                                            </tr>
-                                                                        </tfoot> -->
+                                                                       
                                                                     </table>
+                                                                    <hr>
+                                                                    <div class="d-flex justify-content-between">
+                                                                        <span class="font-weight-bold ">Total: </span> 
+                                                                        <span class="font-weight-bold h6"> <span class="text-danger">{{sommeEnregistrement()}} Fcfa</span></span> 
+                                                                    </div>
+                                                                    <hr>
+
                                                                 </div>
 
                                                           </div>
-                                                       }
                                                     
                                                     </div>
                                                     <!-- col-lg-12 end here -->

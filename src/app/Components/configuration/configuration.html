@@ -1,1 +1,161 @@
-<p>configuration works!</p>
+<div class="pcoded-wrapper">
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ breadcrumb ] start -->
+                            <div class="page-header">
+                                <div class="page-block">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-12">
+                                            <div class="page-header-title">
+                                                <h5 class="m-b-10">Configuration Page</h5>
+                                            </div>
+                                            <ul class="breadcrumb">
+                                                <li class="breadcrumb-item"><a routerLink=""><i class="feather icon-home"></i></a></li>
+                                                <li class="breadcrumb-item"><a routerLink="">Configuration Page</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- [ breadcrumb ] end -->
+                             <!-- Informations sur le client  -->
+                            
+                            <!-- [ Main Content ] start -->
+                            <div class="container bg bg-white p-5">
+                                <div class="row">
+                                  
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <!-- [ tabs ] start -->
+                                                        <div class="col-sm-12">
+                                                            
+                                                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link active text-uppercase" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Materiel</a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link text-uppercase" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Tache</a>
+                                                                </li>
+                                                            </ul>
+                                                            <div class="tab-content" id="myTabContent">
+                                                                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                                                    <div class="row">
+                                                                        <div class="col-md-8">
+                                                                            <div class="card-body">
+                                                                                @if (materielIsCreated()) {
+                                                                                    <div class="alert alert-success " role="alert">
+                                                                                        Nouveau Materiel ajoutée
+                                                                                    </div>
+                                                                                }
+                                                                                <p class="font-weight-bold mb-2">Materiel enregistres</p>
+
+                                                                                @for (m of listMateriel(); track $index) {
+                                                                                    <ul class="list-group">
+                                                                                        <li class="list-group-item d-flex justify-content-between">
+                                                                                            <span>{{m.intitule}}</span>
+                                                                                            <span>{{m.prixUnitaire}} / {{m.unite}} </span>                                                                                            
+                                                                                        </li>
+                                                                                        
+                                                                                    </ul>
+                                                                                }
+                                                                                @empty {
+                                                                                        <li class="list-group-item text-danger">Aucune taches enregistres</li>
+                                                                                    
+                                                                                }
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-4">
+                                                                            <div class="card border rounded shadow-sm">
+                                                                              <div class="card-header">
+                                                                                <h3 class="fw-bold">Créer un Matériel</h3>
+                                                                              </div>
+                                                                              
+                                                                              <div class="card-body">
+                                                                              
+                                                                                <form [formGroup]="materielFb" (ngSubmit)="createMatiere()">
+                                                                                  <div class="form-group mb-2">
+                                                                                    <label>Désignation</label>
+                                                                                    <input type="text" class="form-control" formControlName="intitule" placeholder="Nom du matériel">
+                                                                                  </div>
+                                                                                  <div class="form-group mb-2">
+                                                                                    <label>Unité</label>
+                                                                                    <input type="text" class="form-control" formControlName="unite" placeholder="Unité">
+                                                                                  </div>
+                                                                                  <div class="form-group mb-2">
+                                                                                    <label>Prix Unitaire</label>
+                                                                                    <input type="number" class="form-control" formControlName="prixUnitaire" placeholder="Prix Unitaire">
+                                                                                  </div>
+                                                                                  <button type="submit" class="btn btn-outline-primary btn-block">Ajouter</button>
+                                                                                </form>
+                                                                              </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                                                     <div class="row">
+                                                                        <div class="col-md-7">
+                                                                            <div class="card-body">
+                                                                                 @if (isTacheCreated()) {
+                                                                                    <div class="alert alert-success" role="alert">
+                                                                                        Nouvelle Tache ajoutée
+                                                                                    </div>
+                                                                                }
+                                                                                <p class="font-weight-bold mb-2">Liste des taches</p>
+                                                                                    @for (t of listTache(); track $index) {
+                                                                                        <ul class="list-group">
+                                                                                            <li class="list-group-item">{{t.intitule}}</li>
+                                                                                            
+                                                                                        </ul>
+                                                                                    }
+                                                                                    @empty {
+                                                                                            <li class="list-group-item text-danger">Aucune taches enregistres</li>
+                                                                                        
+                                                                                    }
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-5">
+                                                                            <div class="card border rounded shadow-sm">
+                                                                              <div class="card-header">
+                                                                                <h3 class="fw-bold">Créer une Tâche</h3>
+                                                                              </div>
+                                                                              
+                                                                              <div class="card-body">
+                                                                               
+                                                                                <form [formGroup]="tacheFb" (ngSubmit)="createTache()">
+                                                                                  <div class="form-group mb-2">
+                                                                                    <label>Intitule</label>
+                                                                                    <input type="text" class="form-control" formControlName="intitule" placeholder="Nom de la tâche">
+                                                                                  </div>
+                                                                                  <button type="submit" class="btn btn-outline-primary btn-block">Ajouter</button>
+                                                                                </form>
+                                                                              </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                            </div>
+                                                        </div>
+                                                       
+                                                        <!-- [ tabs ] end -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>       
+                                
+                            </div>   
+
+                            
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+ </div>

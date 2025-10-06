@@ -11,6 +11,6 @@ public class Technicien extends Acteur{
     //Classe qui permet la connexion du technicien à la plateforme
 
     private String password;
-
+    private String role ;
 
 }

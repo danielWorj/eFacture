@@ -12,7 +12,7 @@ import com.server.eFacture.Entity.Response.ServerResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("efacture/api/v1/devis/")
+@RequestMapping("efacture/devis/")
 @CrossOrigin("*")
 public interface DevisControllerIN {
 
@@ -23,7 +23,7 @@ public interface DevisControllerIN {
     ResponseEntity<ServerResponse> constructionDevis(@RequestParam("enregistrement") String enregistrement) throws  JsonProcessingException ;
     @GetMapping("/bydevis/{id}")
     ResponseEntity<List<Enregistrement>> findEnregistrementByDevis(@PathVariable Integer id);
-    @GetMapping("/bydevis/tache/{idDevis}/{idTache}")
+    @GetMapping("/impression-enregistrement/{idDevis}/{idTache}")
     ResponseEntity<List<Enregistrement>> findEnregistrementByDevisAndTache(@PathVariable Integer idDevis, @PathVariable Integer idTache);
     @GetMapping("/impression-complete/{id}")
     ResponseEntity<ServerResponse> impressionCompleteDevis(@PathVariable Integer id) throws MalformedURLException, FileNotFoundException;

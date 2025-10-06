@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -41,6 +42,7 @@ public class DevisControllerIM implements DevisControllerIN{
 
     @Override
     public ResponseEntity<Devis> createDevis(String devis) throws JsonProcessingException {
+        System.out.println(devis);
         DevisDTO devisDTO = new ObjectMapper().readValue(devis, DevisDTO.class);
 
         Client client = new Client();
@@ -62,6 +64,9 @@ public class DevisControllerIM implements DevisControllerIN{
         devisToSave.setTechnicien(
                 this.technicienRepository.findById(devisDTO.getTechnicien()).orElse(null)
         );
+
+        devisToSave.setDate(new Date());
+        devisToSave.setStatus(true);
 
         this.devisRepository.save(devisToSave);
 

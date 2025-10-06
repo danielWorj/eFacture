@@ -7,6 +7,8 @@ import com.server.eFacture.Entity.Entreprise.Technicien;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Date;
+
 @Entity
 @Data
 public class Devis {
@@ -21,4 +23,8 @@ public class Devis {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Technicien technicien;
+
+    private Boolean status ; //Pour le status paye / unpaid du devis
+
+    private Date date ; //Date de creation du devis
 }

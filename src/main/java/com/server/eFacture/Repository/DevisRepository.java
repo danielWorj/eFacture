@@ -10,8 +10,16 @@ import java.util.List;
 
 public interface DevisRepository extends JpaRepository<Devis,Integer> {
     List<Devis> findByTechnicien(Technicien technicien);
+
     List<Devis> findByClient(Client client);
 
     @Query(value = "SELECT d FROM Devis d ORDER BY d.id DESC LIMIT 1")
     Devis lastDevisSave();
+
+    @Query(value = "SELECT COUNT(d) FROM Devis d")
+    Integer numberOfDevis();
+    @Query(value = "SELECT COUNT(d) FROM Devis d WHERE d.status=:status ")
+    Integer numberOfDevisByStatus(Boolean status);
+
+
 }

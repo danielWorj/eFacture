@@ -8,11 +8,16 @@ export const eFactureEndPoints = {
     Devis : {
         creation : `${devisapi}/creation`,
         construction : `${devisapi}/construction`,
+        id : `${devisapi}/byid`, 
+        all : `${devisapi}/all`,
     }, 
     Enregistrement :{
         allByDevisAndTache : `${devisapi}/impression-enregistrement`, 
         impressionTache : `${devisapi}/impression-tache`, 
         impressionComplete : `${devisapi}/impression-complete`, 
+        download :`${configurationapi}/load`, 
+        telechargementByDevisAndTache :  `${devisapi}/telechargement-devis-tache`
+        
     }, 
     Materiel : {
         all : `${configurationapi}/materiel/all`, 
@@ -21,6 +26,7 @@ export const eFactureEndPoints = {
     Tache : {
         all : `${configurationapi}/tache/all`,
         create : `${configurationapi}/tache/create`,
+        allTacheByDevis : `${devisapi}/allTache`, 
     }, 
     Auth :{
         register : `${authUrl}/register`,

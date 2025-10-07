@@ -245,4 +245,88 @@ listEnregistrement = signal<Enregistrement[]>([]);
   this.sommeEnregistrement.set(somme);
   console.log(this.sommeEnregistrement());
  }
+
+ telechargement(){
+  const filename="doku.jpeg"; 
+
+  // this.devisService.download(filename).subscribe({
+  //   next :(data:any)=>{
+  //     console.log('telechargement du fichier en cours');
+  //   }
+  // })
+
+  this.devisService.download(filename).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename; // nom du fichier
+      a.click();
+      window.URL.revokeObjectURL(url);
+  });
+ }
+
+ 
+  telechargementTotaleByDevis(idDevis :number){
+  //1- Lance l'impression 
+
+  //2- Lancement du telechargement 
+
+  //2a - Liste des taches par devis
+  //2b - Lancement du telechargement par devis et tache
+  //let idDevis = 1; 
+    if (idDevis!=0) {
+       let devisById : Devis ; 
+
+  this.devisService.devisById(idDevis).subscribe({
+    next :(data : Devis)=>{
+      devisById = data; 
+      console.log(devisById);
+    }
+  })
+
+  this.devisService.impressionCompleteDevis(idDevis).subscribe({
+    next :(data :ServerResponse)=>{
+      console.log(data); 
+      
+      let listTache: Tache[] = []; 
+        
+      this.devisService.getAllTacheByDevis(idDevis).subscribe({
+        next:(data :Tache[])=>{
+          listTache = data; 
+          console.log(listTache);
+          //Lancement du telechargement par devis et tache
+
+          for (let j = 0; j < listTache.length; j++) {
+            this.downloadPdfDevisTache(idDevis, listTache[j].id, devisById.client.nom, listTache[j].intitule);  
+          }
+        }, 
+        error : ()=>{
+          console.error('List tache par Devis : failed'); 
+        }
+      })
+    }, 
+    error : ()=>{
+      console.log('Impression complete : failed'); 
+    }
+  }); 
+
+    }else{
+      alert("Terminer l'elaboration du devis avant de le telecharger")
+    }
+
+ }
+
+ downloadPdfDevisTache(idDevis:number, idTache:number , nomClient:string , nomTache:string ){
+  this.devisService.telechargementByDevisAndTache(idDevis,idTache).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = nomClient+" "+nomTache+".pdf"; // nom du fichier
+      a.click();
+      window.URL.revokeObjectURL(url);
+      console.log('Telechargement reussie');
+  })
+ }
+
+
 }

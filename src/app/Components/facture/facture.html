@@ -90,43 +90,27 @@
 															<tr>
 																<th><span>Identifiant</span></th>
 																<th><span>Client</span></th>
-																<th><span>Date</span></th>
-																<th><span>Montant</span></th>
+																<th><span>Contact </span></th>
+																<th><span>Localisation</span></th>
+																
 																<th><span>Actions</span></th>
 															</tr>
 														</thead>
 														<tbody>
-															<tr>
-																<td>001</td>
-																<td>Yvan Schemel</td>
-																<td>13-07-2025</td>
-																<td>200.000 Fcfa</td>
-																<td>
-                                                                   
-                                                                </td>
-			
-															</tr>
-                                                            <tr>
-																<td>002</td>
-																<td>Daniel EYEBE</td>
-																<td>16-09-2025</td>
-																<td>250.000 Fcfa</td>
-																<td>
-                                                                   
-                                                                </td>
-			
-															</tr>
-                                                            <tr>
-																<td>002</td>
-																<td>Libert Nkongo</td>
-																<td>16-09-2025</td>
-																<td>350.000 Fcfa</td>
-																<td>
-                                                                   
-                                                                </td>
-			
-															</tr>
 															
+															@for (d of listDevis(); track $index) {
+																<tr>
+																	<td>{{d.id}}</td>
+																	<td>{{d.client.nom}}</td>
+																	<td>{{d.client.telephone}}</td>
+																	<td>{{d.client.localisation}}</td>
+																	<td>
+																		<i class="fas fa-trash text-danger f-15 m-1"></i>
+																		<i class="fas fa-print text-info f-15 m-1" (click)="telechargementTotaleByDevis(d.id)"></i>
+																	</td>
+																</tr>
+															}
+                                                           
 														</tbody>
 													</table>
 												</div>

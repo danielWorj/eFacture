@@ -5,6 +5,7 @@ import { Devis } from '../../Model/Devis/Devis';
 import { eFactureEndPoints } from '../../Constants/EndPoints';
 import { ServerResponse } from '../../Model/Server Response/ServerResponse';
 import { Enregistrement } from '../../Model/Devis/Enregistrement';
+import { Tache } from '../../Model/Devis/Tache';
 
 
 @Injectable({
@@ -13,8 +14,14 @@ import { Enregistrement } from '../../Model/Devis/Enregistrement';
 export class DevisService {
   constructor(private http :HttpClient){}
 
+  getAllDevis():Observable<Devis[]>{
+    return this.http.get<Devis[]>(eFactureEndPoints.Devis.all); 
+  }
   creationDevis(request :any){
     return this.http.post<Devis>(eFactureEndPoints.Devis.creation, request); 
+  }
+  devisById(id:number):Observable<Devis>{
+    return this.http.get<Devis>(eFactureEndPoints.Devis.id+"/"+id);
   }
 
   devisConstructor(request:any){
@@ -32,4 +39,19 @@ export class DevisService {
   impressionPartielDevisAndTache(devis:number, tache :number):Observable<ServerResponse>{
     return this.http.get<ServerResponse>(eFactureEndPoints.Enregistrement.impressionTache+'/'+devis+'/'+tache); 
   }
+
+  download(filename:string):Observable<any>{
+       // return this.http.get<any>(eFactureEndPoints.Enregistrement.download+'/'+filename);
+    return this.http.get(eFactureEndPoints.Enregistrement.download+'/'+filename, { responseType: 'blob' }); 
+  }
+
+  getAllTacheByDevis(idDevis :number):Observable<Tache[]> {
+    return this.http.get<Tache[]>(eFactureEndPoints.Tache.allTacheByDevis+"/"+idDevis); 
+  }
+
+  telechargementByDevisAndTache(idDevis :number , idTache:number):Observable<any>{
+    return this.http.get(eFactureEndPoints.Enregistrement.telechargementByDevisAndTache+"/"+idDevis+"/"+idTache, { responseType: 'blob' });
+  }
+
+
 }

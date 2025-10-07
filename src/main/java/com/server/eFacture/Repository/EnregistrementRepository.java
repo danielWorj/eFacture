@@ -5,6 +5,7 @@ import com.server.eFacture.Entity.Devis.Enregistrement;
 import com.server.eFacture.Entity.Entreprise.Tache;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -14,4 +15,7 @@ public interface EnregistrementRepository extends JpaRepository<Enregistrement,I
     List<Enregistrement> findByDevis(Devis devis);
 
     List<Enregistrement> findByDevisAndTache(Devis devis, Tache tache);
+
+    @Query(value = "SELECT t FROM Enregistrement e JOIN e.devis d JOIN e.tache t WHERE d.id=:id")
+    List<Tache> findAllTacheByDevis(@Param("id") Integer id);
 }

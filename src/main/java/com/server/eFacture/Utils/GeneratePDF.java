@@ -38,7 +38,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GeneratePDF {
     public void generate(Devis devis, Tache tache ,  List<Enregistrement> enregistrementList) throws FileNotFoundException, MalformedURLException {
-        String namePdfFile = String.valueOf(tache.getIntitule()+".pdf"); //Nom du pdf
+        String namePdfFile = devis.getClient().getNom()+" "+tache.getIntitule()+".pdf"; //Nom du pdf
         PdfWriter pdfWriter = new PdfWriter(namePdfFile);
         PdfDocument pdfDocument = new PdfDocument(pdfWriter);
         pdfDocument.setDefaultPageSize(PageSize.A4);
@@ -169,6 +169,8 @@ public class GeneratePDF {
         document.close();
 
         fileCopy(devis.getClient().getNom(),namePdfFile);
+
+        deleteFileInSource(namePdfFile);
     }
     public static void fileCopy(String nomClient , String nomPdf){
        // Path sourcePath = Paths.get("./Source/img.png");
@@ -182,23 +184,31 @@ public class GeneratePDF {
             //Check si le dossier existe deja
             if (!Files.isDirectory(dossier)){
                 Path dir = Files.createDirectory(Path.of("./"+nomClient)); //creation
-            }else{
-                //s il existe deja on supprime et on cree un nouveau
-                Files.delete(dossier);
-                Path dir = Files.createDirectory(Path.of("./"+nomClient)); //creation
             }
             //On cree un dossier
             Files.copy(source,destination);
             //System.out.println("File copied successfully");
-
-            Files.delete(source);
-            //System.out.println("File delete successfully");
-
         }catch (
                 IOException e){
             System.err.println("Error copying file: " + e.getMessage());
         }
 
+    }
+
+    public static void deleteFileInSource(String fileNamePdf){
+        Path source = Paths.get("./"+fileNamePdf);
+        try {
+            if (Files.exists(source)){
+
+                Files.delete(source); //Si le fichier existe on supprime d'ou il provient
+                System.out.println("Fichier "+fileNamePdf+" Supprime dans la racine");
+            }else{
+                //sinon on envoie en console qu'il n'existe pas
+                System.out.println("Le fichier n'existe pas a la source");
+            }
+        }catch (Exception e){
+            System.err.println("Erreur de suppression du  fichier :"+e.getMessage());
+        }
     }
     public static Cell getHeaderTextCell(String textValue){
         return new Cell()

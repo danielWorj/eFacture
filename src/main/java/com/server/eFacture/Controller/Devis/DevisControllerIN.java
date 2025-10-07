@@ -8,7 +8,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.server.eFacture.Entity.Devis.Devis;
 import com.server.eFacture.Entity.Devis.Enregistrement;
 import com.server.eFacture.Entity.Entreprise.Materiel;
+import com.server.eFacture.Entity.Entreprise.Tache;
 import com.server.eFacture.Entity.Response.ServerResponse;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +20,16 @@ public interface DevisControllerIN {
 
     @PostMapping("/creation")
     ResponseEntity<Devis> createDevis(@RequestParam("devis") String devis) throws JsonProcessingException;
-
+    @GetMapping("/all")
+    ResponseEntity<List<Devis>> getAllDevis();
+    @GetMapping("/byid/{id}")
+    ResponseEntity<Devis> findDevisById(@PathVariable Integer id);
     @PostMapping("/construction")
     ResponseEntity<ServerResponse> constructionDevis(@RequestParam("enregistrement") String enregistrement) throws  JsonProcessingException ;
     @GetMapping("/bydevis/{id}")
     ResponseEntity<List<Enregistrement>> findEnregistrementByDevis(@PathVariable Integer id);
+    @GetMapping("allTache/{id}")//Toute les tache du devis id
+    ResponseEntity<List<Tache>> findAllTacheByDevis(@PathVariable Integer id);
     @GetMapping("/impression-enregistrement/{idDevis}/{idTache}")
     ResponseEntity<List<Enregistrement>> findEnregistrementByDevisAndTache(@PathVariable Integer idDevis, @PathVariable Integer idTache);
     @GetMapping("/impression-complete/{id}")
@@ -31,4 +38,6 @@ public interface DevisControllerIN {
     @GetMapping("/impression-tache/{devisid}/{tacheid}")
     ResponseEntity<ServerResponse> impressionTacheByDevis(@PathVariable Integer devisid,@PathVariable Integer tacheid ) throws MalformedURLException, FileNotFoundException;
 
+    @GetMapping("/telechargement-devis-tache/{idDevis}/{idTache}")//id ici c'est l'id du devis
+    ResponseEntity<Resource> telechargementComplet(@PathVariable Integer idDevis , @PathVariable Integer idTache ) throws FileNotFoundException;
 }

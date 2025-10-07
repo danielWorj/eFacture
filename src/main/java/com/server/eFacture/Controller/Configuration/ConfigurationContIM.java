@@ -12,10 +12,19 @@ import com.server.eFacture.Repository.MaterielRepository;
 import com.server.eFacture.Repository.TacheRepository;
 import com.server.eFacture.Repository.TechnicienRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Controller
@@ -26,6 +35,8 @@ public class ConfigurationContIM implements ConfigurationContIn{
     private TacheRepository tacheRepository;
     @Autowired
     private ClientRepository clientRepository;
+
+
     @Override
     public ResponseEntity<String> login() {
         return ResponseEntity.ok("Login give");
@@ -70,5 +81,26 @@ public class ConfigurationContIM implements ConfigurationContIn{
         serverResponse.setStatus(true);
         serverResponse.setMessage("Tache cree avec success");
         return ResponseEntity.ok(serverResponse);
+    }
+
+
+
+    private final String fileDirectory = "D:\\Projet Devis Facture\\eFacture\\Libert";
+
+
+    public ResponseEntity<Resource> downloadFile(String filename) throws FileNotFoundException {
+
+        System.out.println("telechargement");
+
+        File file = new File(fileDirectory + File.separator + filename);
+        if (!file.exists()) {
+            throw new FileNotFoundException("Fichier non trouvé : " + filename);
+        }
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
     }
 }

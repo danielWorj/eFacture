@@ -15,10 +15,16 @@ import com.server.eFacture.Repository.*;
 import com.server.eFacture.Utils.GeneratePDF;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.Date;
@@ -77,6 +83,22 @@ public class DevisControllerIM implements DevisControllerIN{
     }
 
     @Override
+    public ResponseEntity<List<Devis>> getAllDevis() {
+        return ResponseEntity.ok(
+                this.devisRepository.findAll()
+        );
+    }
+
+    @Override
+    public ResponseEntity<Devis> findDevisById(Integer id) {
+        return ResponseEntity.ok(
+                this.devisRepository.findById(
+                        id
+                ).orElse(null)
+        );
+    }
+
+    @Override
     public ResponseEntity<ServerResponse> constructionDevis(String enregistrement) throws JsonProcessingException {
         EnregistrementDTO enregistrementDTO = new ObjectMapper().readValue(enregistrement, EnregistrementDTO.class);
         ServerResponse serverResponse = new ServerResponse();
@@ -115,6 +137,16 @@ public class DevisControllerIM implements DevisControllerIN{
         return ResponseEntity.ok(this.enregistrementRepository.findByDevis(
                 this.devisRepository.findById(id).orElse(null)
         ));
+    }
+
+    @Override
+    public ResponseEntity<List<Tache>> findAllTacheByDevis(Integer id) {
+        //Recupere toutes les taches d,un devis
+        return ResponseEntity.ok(
+                this.enregistrementRepository.findAllTacheByDevis(
+                        id
+                )
+        );
     }
 
     @Override
@@ -164,6 +196,49 @@ public class DevisControllerIM implements DevisControllerIN{
         serverResponse.setStatus(true);
 
         return ResponseEntity.ok(serverResponse);
+    }
+
+    @Override
+    public ResponseEntity<Resource> telechargementComplet(Integer idDevis , Integer idTache) throws FileNotFoundException {
+        //Recuperation du du client
+        Devis devis = this.devisRepository.findById(
+                idDevis
+        ).orElse(null);
+
+        Client client = devis.getClient();
+
+        //Recuperation de la tache
+        Tache tache = this.tacheRepository.findById(
+                idTache
+        ).orElse(null);
+
+        //File directory with client name ;
+
+        String fileDirectory = "D:\\Projet Devis Facture\\eFacture\\"+client.getNom();
+
+
+        //File name with Tache
+
+        String filename = devis.getClient().getNom()+" "+tache.getIntitule()+".pdf";
+        File file = new File(fileDirectory + File.separator + filename);
+
+        //Lancement proprement dit du telechargement
+
+        if (!file.exists()) {
+            //Si le fichier n'existe pas le dossier indexe
+            throw new FileNotFoundException("Fichier "+filename+" non trouve dans le dossier : " + fileDirectory);
+        }
+
+        //Sinon on renvoie la resource
+
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+
+
     }
 
 

@@ -10,11 +10,15 @@ export const eFactureEndPoints = {
         construction : `${devisapi}/construction`,
         id : `${devisapi}/byid`, 
         all : `${devisapi}/all`,
+        count : `${devisapi}/count`,
     }, 
     Enregistrement :{
+        byDevis : `${devisapi}/bydevis`,
         allByDevisAndTache : `${devisapi}/impression-enregistrement`, 
         impressionTache : `${devisapi}/impression-tache`, 
         impressionComplete : `${devisapi}/impression-complete`, 
+        impressionRecapitulatif : `${devisapi}/impression-recapitulatif`, 
+        telechargementRecapitulatif : `${devisapi}/telechargement-devis-recapitulatif`, 
         download :`${configurationapi}/load`, 
         telechargementByDevisAndTache :  `${devisapi}/telechargement-devis-tache`
         

@@ -20,6 +20,10 @@ export class DevisService {
   creationDevis(request :any){
     return this.http.post<Devis>(eFactureEndPoints.Devis.creation, request); 
   }
+
+  countDevis(idTechnicien :number):Observable<number>{
+    return this.http.get<number>(eFactureEndPoints.Devis.count+"/"+idTechnicien);
+  }
   devisById(id:number):Observable<Devis>{
     return this.http.get<Devis>(eFactureEndPoints.Devis.id+"/"+id);
   }
@@ -30,6 +34,10 @@ export class DevisService {
 
   fetchAllEnregistrementByDevisAndTache(idDevis :number, idTache:number){
     return this.http.get<Enregistrement[]>(`${eFactureEndPoints.Enregistrement.allByDevisAndTache}/${idDevis}/${idTache}`);
+  }
+
+  fetcHAllEnrigrementByDevis(idDevis :number):Observable<Enregistrement[]>{
+    return this.http.get<Enregistrement[]>(`${eFactureEndPoints.Enregistrement.byDevis}/${idDevis}`);
   }
 
   impressionCompleteDevis(devis :number):Observable<ServerResponse>{
@@ -51,6 +59,14 @@ export class DevisService {
 
   telechargementByDevisAndTache(idDevis :number , idTache:number):Observable<any>{
     return this.http.get(eFactureEndPoints.Enregistrement.telechargementByDevisAndTache+"/"+idDevis+"/"+idTache, { responseType: 'blob' });
+  }
+
+  impressionRecapitulatif(idDevis :number):Observable<ServerResponse>{
+    return this.http.get<ServerResponse>(eFactureEndPoints.Enregistrement.impressionRecapitulatif+"/"+idDevis); 
+  }
+
+  telechargementRecapitulatifByDevis(idDevis :number):Observable<any>{
+    return this.http.get(eFactureEndPoints.Enregistrement.telechargementRecapitulatif+"/"+idDevis, { responseType: 'blob' });
   }
 
 

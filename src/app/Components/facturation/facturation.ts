@@ -277,38 +277,49 @@ listEnregistrement = signal<Enregistrement[]>([]);
     if (idDevis!=0) {
        let devisById : Devis ; 
 
-  this.devisService.devisById(idDevis).subscribe({
-    next :(data : Devis)=>{
-      devisById = data; 
-      console.log(devisById);
-    }
-  })
+    this.devisService.devisById(idDevis).subscribe({
+      next :(data : Devis)=>{
+        devisById = data; 
+        console.log(devisById);
+      }
+    })
 
-  this.devisService.impressionCompleteDevis(idDevis).subscribe({
-    next :(data :ServerResponse)=>{
-      console.log(data); 
-      
-      let listTache: Tache[] = []; 
+    this.devisService.impressionCompleteDevis(idDevis).subscribe({
+      next :(data :ServerResponse)=>{
+        console.log(data); 
         
-      this.devisService.getAllTacheByDevis(idDevis).subscribe({
-        next:(data :Tache[])=>{
-          listTache = data; 
-          console.log(listTache);
-          //Lancement du telechargement par devis et tache
+        let listTache: Tache[] = []; 
+          
+        this.devisService.getAllTacheByDevis(idDevis).subscribe({
+          next:(data :Tache[])=>{
+            listTache = data; 
+            console.log(listTache);
+            //Lancement du telechargement par devis et tache
 
-          for (let j = 0; j < listTache.length; j++) {
-            this.downloadPdfDevisTache(idDevis, listTache[j].id, devisById.client.nom, listTache[j].intitule);  
+            for (let j = 0; j < listTache.length; j++) {
+              this.downloadPdfDevisTache(idDevis, listTache[j].id, devisById.client.nom, listTache[j].intitule);  
+            }
+          }, 
+          error : ()=>{
+            console.error('List tache par Devis : failed'); 
           }
-        }, 
-        error : ()=>{
-          console.error('List tache par Devis : failed'); 
+        })
+      }, 
+      error : ()=>{
+        console.log('Impression complete : failed'); 
+      }
+    }); 
+
+    this.devisService.impressionRecapitulatif(idDevis).subscribe({
+      next:(data :ServerResponse)=>{
+        if (data) {
+          console.log('Le recapitulatif a ete imprime'); 
+
+          //On procede au telechargement 
+          this.downloadPdfRecapitulatif(idDevis,  devisById.client.nom);
         }
-      })
-    }, 
-    error : ()=>{
-      console.log('Impression complete : failed'); 
-    }
-  }); 
+      }
+    })
 
     }else{
       alert("Terminer l'elaboration du devis avant de le telecharger")
@@ -328,5 +339,16 @@ listEnregistrement = signal<Enregistrement[]>([]);
   })
  }
 
+downloadPdfRecapitulatif(idDevis:number,  nomClient:string ){
+  this.devisService.telechargementRecapitulatifByDevis(idDevis).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = nomClient+" Recapitulatif.pdf";  // nom du fichier
+      a.click();
+      window.URL.revokeObjectURL(url);
+      console.log('Telechargement reussie');
+  })
+ }
 
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.server.eFacture.DTO.DevisDTO;
 import com.server.eFacture.DTO.EnregistrementDTO;
+import com.server.eFacture.DTO.JSON.TacheMontantDTO;
 import com.server.eFacture.Entity.Devis.Client;
 import com.server.eFacture.Entity.Devis.Devis;
 import com.server.eFacture.Entity.Devis.Enregistrement;
@@ -27,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -90,6 +92,15 @@ public class DevisControllerIM implements DevisControllerIN{
     }
 
     @Override
+    public ResponseEntity<Integer> sumTotalDevis(Integer idTechnicien) {
+        return ResponseEntity.ok(
+                this.devisRepository.numberTotalDevis(
+                        idTechnicien
+                )
+        );
+    }
+
+    @Override
     public ResponseEntity<Devis> findDevisById(Integer id) {
         return ResponseEntity.ok(
                 this.devisRepository.findById(
@@ -142,6 +153,7 @@ public class DevisControllerIM implements DevisControllerIN{
     @Override
     public ResponseEntity<List<Tache>> findAllTacheByDevis(Integer id) {
         //Recupere toutes les taches d,un devis
+        Devis devis = this.devisRepository.findById(id).orElse(null);
         return ResponseEntity.ok(
                 this.enregistrementRepository.findAllTacheByDevis(
                         id
@@ -165,9 +177,28 @@ public class DevisControllerIM implements DevisControllerIN{
         List<Enregistrement> enregistrementList = this.enregistrementRepository.findByDevis(devis);
         GeneratePDF generatePDF  = new GeneratePDF();
 
+        List<Integer> listTache = new ArrayList<>(); //Cette les id des taches envoye pour l'impression
+
         for (int i = 0; i < enregistrementList.size(); i++) {
-            generatePDF.generate( enregistrementList.get(i).getDevis() ,enregistrementList.get(i).getTache(), enregistrementList );
-            System.out.println("Impression Pour la tache "+enregistrementList.get(i).getTache().getIntitule());
+
+            if (listTache.contains(enregistrementList.get(i).getTache().getId())){
+                System.out.println("L'element existe deja");
+            }else{
+                listTache.add(enregistrementList.get(i).getTache().getId());
+            }
+
+        }
+
+        for (int j = 0; j < listTache.size(); j++) {
+            Tache tache = this.tacheRepository.findById(listTache.get(j)).orElse(null);
+            List<Enregistrement> enregistrementList1 = this.enregistrementRepository.findByDevisAndTache(devis,tache);
+            // System.out.println("Generation de la tache " + tache.getIntitule());
+            generatePDF.generateDevis(
+                    enregistrementList.get(j).getDevis() ,
+                    tache,
+                    enregistrementList1
+            );
+//           System.out.println("Impression Pour la tache "+enregistrementList.get(i).getTache().getIntitule());
         }
 
         ServerResponse serverResponse = new ServerResponse();
@@ -183,7 +214,7 @@ public class DevisControllerIM implements DevisControllerIN{
         Tache tache = this.tacheRepository.findById(tacheid).orElse(null);
         List<Enregistrement> enregistrementList = this.enregistrementRepository.findByDevisAndTache(devis,tache);
         GeneratePDF generatePDF  = new GeneratePDF();
-        generatePDF.generate(
+        generatePDF.generateDevis(
                 devis,
                 tache,
                 enregistrementList
@@ -216,7 +247,6 @@ public class DevisControllerIM implements DevisControllerIN{
 
         String fileDirectory = "D:\\Projet Devis Facture\\eFacture\\"+client.getNom();
 
-
         //File name with Tache
 
         String filename = devis.getClient().getNom()+" "+tache.getIntitule()+".pdf";
@@ -241,5 +271,91 @@ public class DevisControllerIM implements DevisControllerIN{
 
     }
 
+    @Override
+    public ResponseEntity<ServerResponse> impressionRecapitulatif(Integer iddevis) throws MalformedURLException, FileNotFoundException {
+        //Ici on recupere d'abord la liste des taches distinct sur un devis
+        //Pour chaque tache on calcul la somme et on stocke dans le JSon
+        Devis devis = this.devisRepository.findById(iddevis).orElse(null);
 
+        List<Tache> listTacheByDevis = this.enregistrementRepository.findAllTacheByDevis(iddevis);
+
+
+        List<TacheMontantDTO> tacheMontantDTOList = new ArrayList<>();
+        //
+
+        for (int i = 0; i < listTacheByDevis.size(); i++) {
+            System.out.println("indice "+ i);
+
+            TacheMontantDTO tacheMontantDTO = new TacheMontantDTO();
+
+            List<Enregistrement> allEnregistementByTache = this.enregistrementRepository.findByDevisAndTache(devis, listTacheByDevis.get(i));
+
+            tacheMontantDTO.setTache(listTacheByDevis.get(i));
+            tacheMontantDTO.setMontant(sommeCummuleByTache(allEnregistementByTache));
+
+            tacheMontantDTOList.add(tacheMontantDTO);
+
+            System.out.println(tacheMontantDTOList);
+        }
+        //System.out.println(tacheMontantDTOList);
+
+        GeneratePDF generatePDF  = new GeneratePDF();
+        generatePDF.generateRecapitulatif(
+                devis,
+                tacheMontantDTOList
+        );
+
+        ServerResponse serverResponse = new ServerResponse();
+
+        serverResponse.setMessage("impression du recapitulati termine");
+        serverResponse.setStatus(true);
+        return ResponseEntity.ok(serverResponse);
+    }
+
+    @Override
+    public ResponseEntity<Resource> telechargementRecapitulatifByDevis(Integer id) throws FileNotFoundException {
+        //Recuperation du du client
+        Devis devis = this.devisRepository.findById(
+                id
+        ).orElse(null);
+
+        Client client = devis.getClient();
+
+
+        //File directory with client name ;
+
+        String fileDirectory = "D:\\Projet Devis Facture\\eFacture\\"+client.getNom();
+
+        //File name with Tache
+
+        String filename = devis.getClient().getNom()+" Recapitulatif.pdf";
+        File file = new File(fileDirectory + File.separator + filename);
+
+        //Lancement proprement dit du telechargement
+
+        if (!file.exists()) {
+            //Si le fichier n'existe pas le dossier indexe
+            throw new FileNotFoundException("Fichier "+filename+" non trouve dans le dossier : " + fileDirectory);
+        }
+
+        //Sinon on renvoie la resource
+
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+
+
+    }
+
+
+    public  static  Integer sommeCummuleByTache(List<Enregistrement> enregistrementList){
+        Integer sommeVar = 0;
+        for (int i = 0; i < enregistrementList.size(); i++) {
+            sommeVar = sommeVar+ (enregistrementList.get(i).getQuantite() * enregistrementList.get(i).getMateriel().getPrixUnitaire());
+        }
+        return sommeVar ;
+    }
 }

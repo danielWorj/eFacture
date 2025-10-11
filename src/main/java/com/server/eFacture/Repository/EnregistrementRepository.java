@@ -16,6 +16,12 @@ public interface EnregistrementRepository extends JpaRepository<Enregistrement,I
 
     List<Enregistrement> findByDevisAndTache(Devis devis, Tache tache);
 
-    @Query(value = "SELECT t FROM Enregistrement e JOIN e.devis d JOIN e.tache t WHERE d.id=:id")
+    @Query(value = "SELECT t FROM Enregistrement e JOIN e.devis d JOIN e.tache t WHERE d.id=:id ")
     List<Tache> findAllTacheByDevis(@Param("id") Integer id);
+
+    @Query(value = "SELECT (e.quantite * m.prixUnitaire) FROM Enregistrement e " +
+            "JOIN e.tache t JOIN e.devis d JOIN e.materiel m "+
+            "WHERE d=:devis AND t=:tache  ")
+    Long listMontantByTache(@Param("devis") Devis devis , @Param("tache") Tache tache);
+
 }
